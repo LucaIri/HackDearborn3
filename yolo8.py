@@ -1,5 +1,5 @@
 import random
-import cv2
+import cv2 
 import numpy as np
 from ultralytics import YOLO
 import pyttsx3
@@ -120,39 +120,49 @@ while True:
         
         # Apply Non-Maximum Suppression (NMS)   
         nms_indices = non_max_suppression(boxes, confidences, iou_threshold = box_overlap_level) 
+        print(f"NMS Indices: {nms_indices}")
+        clsID_val = ''
+        
+        if len(nms_indices) > 0:
+            for i in nms_indices:
+                x, y, w, h = boxes[i] # boundaires per item
+                clsID_val = classIDs[i]
+                conf_val = confidences[i]            
+                
+                cv2.rectangle(
+                    frame,
+                    (x, y),
+                    (x + w, y + h), # from x add w for width, etc.
+                    detection_colors[clsID_val], # random color based on clasID_val
+                    3,
+                )
 
-        for i in nms_indices:
-            x, y, w, h = boxes[i] # boundaires per item
-            clsID_val = classIDs[i]
-            conf_val = confidences[i]            
+                # Display class name and confidence
+                font = cv2.FONT_HERSHEY_COMPLEX
+                cv2.putText(
+                    img = frame,
+                    text = class_list[clsID_val] + " " + str(100 * round(conf_val, 3)) + "%", # Name of object and confidence %
+                    org = (x, y - 10),
+                    fontFace= font,
+                    fontScale = 0.5, #font size
+                    color = (255, 255, 255),
+                    thickness= 1,
+                )
+                
+            print(f"Object Detected: {class_list[clsID_val]}")
+            # Speak the detected object in real time
+            object_name = class_list[clsID_val] #name of object pulled from list using id
+            my_text = f"There is a {object_name}"
+            engine.say(my_text)
+            engine.runAndWait()
+                
+    else:
+        print("No Object Detected!")
             
-            cv2.rectangle(
-                frame,
-                (x, y),
-                (x + w, y + h), # from x add w for width, etc.
-                detection_colors[clsID_val], # random color based on clasID_val
-                3,
-            )
-
-            # Display class name and confidence
-            font = cv2.FONT_HERSHEY_COMPLEX
-            cv2.putText(
-                img = frame,
-                text = class_list[clsID_val] + " " + str(100 * round(conf_val, 3)) + "%", # Name of object and confidence %
-                org = (x, y - 10),
-                fontFace= font,
-                fontScale = 0.5, #font size
-                color = (255, 255, 255),
-                thickness= 1,
-            
-            )
-            
-    # Speak the detected object in real time
-    object_name = class_list[clsID_val] #name of object pulled from list using id
-    my_text = f"There is a {object_name}"
-    engine.say(my_text)
-    engine.runAndWait()
+    # print(clsID_val)
     
+    #for i in range(len(classIDs)):
+               # print(f"objectname: {classIDs[i]}")
     
     # Display the resulting frame
     cv2.imshow("ObjectDetection", frame)
