@@ -3,6 +3,9 @@ from gtts import gTTS # pip install gtts
 import pygame # pip install pygame
 import speech_recognition as sr # pip install SpeechRecognition
 import pyttsx3 # pip install pyttsx3
+from translate import Translator #pip install translate
+
+
 
 
 # Initialize pyttsx3 
@@ -11,43 +14,64 @@ engine = pyttsx3.init()
 # Initialize recognizer 
 recognizer = sr.Recognizer()
 
+
+def translate_from_eng(text, language):
+    print(language)
+    translator = Translator(to_lang=language)
+    output = translator.translate(text)
+    print(output)
+    return output
+
+def find_first_word(text):
+    words = text.split()
+    if words:
+        return words[0]
+    else:
+        return ""
+
+
 # Function to take voice input and return recognized text
 def voice_input():
     with sr.Microphone() as source:
-        print("Listening!")
-        engine.say("Listening!")
+        print("Pick a language. English, Spanish, French, Arabic, German, or Russian?")
+        engine.say("Pick a language. English, Spanish, French, Arabic, German, or Russian?")
         engine.runAndWait()
-        recognizer.adjust_for_ambient_noise(source)  # Adjust for noise
+        #recognizer.adjust_for_ambient_noise(source)  # Adjust for noise
         audio = recognizer.listen(source)
         print("Audio captured!")
 
         try:
             print("Recognizing...")
-            text = recognizer.recognize_google(audio)
+            language = recognizer.recognize_google(audio)
+            print(language)
+            language = find_first_word(language)
+            print(language)
             # Recognize speech using Google's speech recognition
-            if(text.lower() == "english"):
-                language = "en"
-            if(text.lower() == "arabic"):
-                language = "ar"
-            if(text.lower() == "spanish"):
-                language = "es"
-            if(text.lower() == "french"):
-                language = "fr"
-            if(text.lower() == "german"):
-                language = "de"
-            if(text.lower() == "russian"):
-                language = "ru"
+            if(language == "English"):
+                print("HELLO")
+                lang_abbrev = "en"
+            elif(language == "Arabic"):
+                lang_abbrev = "ar"
+            elif(language == "Spanish"):
+                lang_abbrev = "es"
+            elif(language == "French"):
+                lang_abbrev = "fr"
+            elif(language == "German"):
+                lang_abbrev = "de"
+            elif(language == "Russian"):
+                lang_abbrev = "ru"
             else:
-                language = "Not recognized"
+                lang_abbrev = "Not recognized"
             
-            return language
+            return lang_abbrev, language
         except sr.UnknownValueError:
             print("I could not understand the audio.")
         except sr.RequestError as e:
             print(f"Could not request results; {e}")
         return None
 
-def speak_text(lanuage, text):
+def speak_text(lanuage, text, full_lang):
+    text = translate_from_eng(text, lanuage)
     # Initialize gTTS object
     tts = gTTS(text, lang=lanuage)
 
@@ -71,9 +95,9 @@ def speak_text(lanuage, text):
 
 # Main program
 if __name__ == "__main__":
-    lang = voice_input()  # Get voice input
-    if lang != "Not recognized":
-        speak_text(lang, "Hello, how are you?")  # Speak the recognized text
+    lang_abb, lang_name = voice_input()  # Get voice input
+    if lang_abb != "Not recognized":
+        speak_text(lang_abb, "Hello my friend", lang_name)  # Speak the recognized text
     else:
         print("I didn't catch that, could you repeat?")
 
