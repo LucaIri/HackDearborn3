@@ -25,6 +25,7 @@ def translate_from_eng(text, language):
 def find_first_word(text):
     words = text.split()
     if words:
+        print (words[0])
         return words[0]
     else:
         return ""
@@ -43,8 +44,12 @@ def voice_input():
         try:
             print("Recognizing...")
             language = recognizer.recognize_google(audio)
-            print(language)
-            language = find_first_word(language)
+            print(type(language)) 
+            if(language.strip() == ""):
+                print("TEST_HI")
+                lang_abbrev = "en"
+            else:
+                language = find_first_word(language)
             print(language)
             # Recognize speech using Google's speech recognition
             if(language == "English"):
@@ -60,15 +65,22 @@ def voice_input():
                 lang_abbrev = "de"
             elif(language == "Russian"):
                 lang_abbrev = "ru"
+           
             else:
                 lang_abbrev = "Not recognized"
             
             return lang_abbrev
         except sr.UnknownValueError:
             print("I could not understand the audio.")
+            # print("Please Try Again!")
+            # engine.say("Please Try Again!")
+            # engine.runAndWait()
         except sr.RequestError as e:
             print(f"Could not request results; {e}")
-        return None
+            # print("Please Try Again!")
+            # engine.say("Please Try Again!")
+            # engine.runAndWait()
+        return "Not recognized"
 
 def speak_text(lanuage, text):
     text = translate_from_eng(text, lanuage)

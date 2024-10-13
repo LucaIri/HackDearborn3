@@ -81,6 +81,9 @@ while True:
     lang_abb = langChange.voice_input()
     if (lang_abb != "Not recognized"):
         break
+    print("Please Try Again!")
+    engine.say("Please Try Again!")
+    engine.runAndWait()
 
 
 
