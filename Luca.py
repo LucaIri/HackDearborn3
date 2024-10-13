@@ -45,7 +45,6 @@ def voice_input():
 
 # Function to use pyttsx3 to speak the text
 def speak_text(text):
-    engine.setProperty()
     engine.say(text)
     engine.runAndWait()
 
