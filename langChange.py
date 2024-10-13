@@ -63,14 +63,14 @@ def voice_input():
             else:
                 lang_abbrev = "Not recognized"
             
-            return lang_abbrev, language
+            return lang_abbrev
         except sr.UnknownValueError:
             print("I could not understand the audio.")
         except sr.RequestError as e:
             print(f"Could not request results; {e}")
         return None
 
-def speak_text(lanuage, text, full_lang):
+def speak_text(lanuage, text):
     text = translate_from_eng(text, lanuage)
     # Initialize gTTS object
     tts = gTTS(text, lang=lanuage)
@@ -95,9 +95,9 @@ def speak_text(lanuage, text, full_lang):
 
 # Main program
 if __name__ == "__main__":
-    lang_abb, lang_name = voice_input()  # Get voice input
+    lang_abb = voice_input()  # Get voice input
     if lang_abb != "Not recognized":
-        speak_text(lang_abb, "Hello my friend", lang_name)  # Speak the recognized text
+        speak_text(lang_abb, "Hello my friend")  # Speak the recognized text
     else:
         print("I didn't catch that, could you repeat?")
 

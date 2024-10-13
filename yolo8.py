@@ -4,11 +4,13 @@ import numpy as np
 from ultralytics import YOLO
 import pyttsx3
 import os
+import langChange
+
+
 
 confidences_level = 0.6 # Confidence Detection Level
 box_overlap_level = 0.2 # Box overlap value
 object_name = "" # Name of object detected
-language = "en" # Language English
 
 # Function for Non-Max Suppression (Box overlapping)
 def non_max_suppression(boxes, confidences, iou_threshold):
@@ -65,13 +67,22 @@ model = YOLO(model="weights/yolov8n.pt", task="v8", verbose=False) #verbose outp
 
 # Initialize TTS engine
 engine = pyttsx3.init()
-engine.setProperty('rate', 150) # Speed percent (can go over 100)
-engine.setProperty('volume', 0.9)
+engine.setProperty('rate', 200) # Speed percent (can go over 100)
+engine.setProperty('volume', 1.0)
 
 
 # Vals to resize video frames | small frame optimise the run
 frame_wid = 640
 frame_hyt = 480
+
+
+# Prompts user to select language of choice
+while True:
+    lang_abb = langChange.voice_input()
+    if (lang_abb != "Not recognized"):
+        break
+
+
 
 cap = cv2.VideoCapture(0) # live camera
 # cap = cv2.VideoCapture("inference/videos/v2.MP4") # Pre loaded video
@@ -141,7 +152,7 @@ while True:
                 font = cv2.FONT_HERSHEY_COMPLEX
                 cv2.putText(
                     img = frame,
-                    text = class_list[clsID_val] + " " + str(100 * round(conf_val, 3)) + "%", # Name of object and confidence %
+                    text = class_list[clsID_val] + " " + str(round(100 * round(conf_val, 3), 1)) + "%", # Name of object and confidence %
                     org = (x, y - 10),
                     fontFace= font,
                     fontScale = 0.5, #font size
@@ -153,8 +164,9 @@ while True:
             # Speak the detected object in real time
             object_name = class_list[clsID_val] #name of object pulled from list using id
             my_text = f"There is a {object_name}"
-            engine.say(my_text)
-            engine.runAndWait()
+            #engine.say(my_text)
+            #engine.runAndWait()
+            langChange.speak_text(lang_abb, my_text)
                 
     else:
         print("No Object Detected!")
